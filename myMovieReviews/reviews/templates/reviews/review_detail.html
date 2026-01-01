@@ -1,0 +1,89 @@
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>my<span class="text-danger">Movie</span>reviews</h2>
+            <a href="{% url 'reviews:review_create' %}" class="btn btn-primary">Add a New review</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <small class="text-muted text-uppercase">제목</small>
+                    <h3 class="mb-0">{{ review.title }}</h3>
+                </div>
+
+                <hr>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase">개봉년도</small>
+                        <p class="mb-0">{{ review.release_year }}년</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase">장르</small>
+                        <p class="mb-0">{{ review.genre }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase">별점</small>
+                        <p class="mb-0">{{ review.rating }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted text-uppercase">러닝타임</small>
+                        <p class="mb-0">{{ review.runtime }}분</p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted text-uppercase">감독</small>
+                    <p class="mb-0">{{ review.director }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted text-uppercase">주연</small>
+                    <p class="mb-0">{{ review.main_actor }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <small class="text-muted text-uppercase">리뷰</small>
+                    <p class="mt-2" style="white-space: pre-wrap; line-height: 1.8;">{{ review.review_content }}</p>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'reviews:review_list' %}" class="btn btn-secondary">← 목록으로</a>
+                    <div>
+                        <!-- <a href="{% url 'reviews:review_update' review.id %}" 
+                        class="btn btn-primary">✏️ 수정</a>
+                        <form action="{% url 'reviews:review_delete' review.id %}" method="post" 
+                        style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" 
+                            class="btn btn-danger" 
+                            onclick="return confirm('정말 삭제하시겠습니까?')">🗑 삭제</button>
+                        </form> -->
+                        <!-- <div class="d-flex gap-2"> -->
+                        <div style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
+                            <form action="{% url 'reviews:review_update' review.id %}" method="get" class="m-0">
+                                <button type="submit" class="btn btn-primary btn-custom">✏️ 수정</button>
+                            </form>
+
+                            <form action="{% url 'reviews:review_delete' review.id %}" method="post" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-custom"
+                                    onclick="return confirm('정말 삭제하시겠습니까?')">🗑 삭제</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

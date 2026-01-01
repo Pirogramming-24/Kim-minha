@@ -1,0 +1,30 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>my<span class="text-danger">Movie</span>reviews</h2>
+    <a href="{% url 'reviews:review_create' %}" class="btn btn-primary">Add a New review</a>
+</div>
+
+<div class="row">
+    {% for review in reviews %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <a href="{% url 'reviews:review_detail' review.id %}" class="text-decoration-none text-dark">
+                    <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; border-radius: 8px;">
+                        {{ review.title }}
+                    </div>
+                    <h5 class="card-title">{{ review.title }}</h5>
+                </a>
+                <p class="card-text mb-1"><small class="text-muted">개봉년도:</small> {{ review.release_year }}년</p>
+                <p class="card-text mb-1"><small class="text-muted">장르:</small> {{ review.genre }}</p>
+                <p class="card-text"><small class="text-muted">별점:</small> {{ review.rating }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            아직 등록된 리뷰가 없습니다. 첫 리뷰를 작성해보세요!
+        </div>
+    </div>
+    {% endfor %}
+</div>
