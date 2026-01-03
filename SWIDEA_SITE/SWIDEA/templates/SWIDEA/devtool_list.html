@@ -1,0 +1,17 @@
+{% extends "SWIDEA/base.html" %}
+{% block content %}
+
+<div class="card">
+  <h2 style="margin-top:0;">DevTool List</h2>
+
+  <ul>
+    {% for d in devtools %}
+      <li>
+        <a href="{% url 'swidea:devtool_detail' d.id %}">{{ d.name }}</a>
+        <span class="muted"> ({{ d.kind }})</span>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "SWIDEA/base.html" %}
+{% block content %}
+
+<div class="card">
+  <h2 style="margin-top:0;">
+    {% if mode == "update" %}개발툴 수정{% else %}개발툴 등록{% endif %}
+  </h2>
+
+  <form method="post"
+        action="{% if mode == 'update' %}{% url 'swidea:devtool_update' devtool.id %}{% else %}{% url 'swidea:devtool_create' %}{% endif %}">
+    {% csrf_token %}
+
+    <div class="muted">name</div>
+    <input class="btn" style="width:100%;" name="name" value="{{ devtool.name|default:'' }}">
+
+    <div style="height:10px;"></div>
+
+    <div class="muted">kind</div>
+    <input class="btn" style="width:100%;" name="kind" value="{{ devtool.kind|default:'' }}">
+
+    <div style="height:10px;"></div>
+
+    <div class="muted">content</div>
+    <textarea class="btn" style="width:100%; height:140px;" name="content">{{ devtool.content|default:'' }}</textarea>
+
+    <div style="height:14px;"></div>
+
+    <div class="row" style="justify-content:flex-end;">
+      <button class="btn btn-primary" type="submit">저장</button>
+      <a class="btn" href="{% url 'swidea:devtool_list' %}">목록</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

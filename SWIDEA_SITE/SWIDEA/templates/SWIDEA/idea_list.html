@@ -1,0 +1,85 @@
+{% extends "SWIDEA/base.html" %}
+{% block content %}
+
+<div class="row" style="justify-content:space-between;">
+    <h2 style="margin:0;">Idea List</h2>
+
+    <form method="get" action="{% url 'swidea:idea_list' %}">
+        <select name="sort" class="btn" onchange="this.form.submit()">
+            <option value="latest" {% if sort == "latest" %}selected{% endif %}>최신순</option>
+            <option value="oldest" {% if sort == "oldest" %}selected{% endif %}>등록순</option>
+            <option value="name" {% if sort == "name" %}selected{% endif %}>이름순</option>
+            <option value="stars" {% if sort == "stars" %}selected{% endif %}>찜하기순</option>
+            <option value="interest" {% if sort == "interest" %}selected{% endif %}>관심도순</option>
+            </select>
+
+    </form>
+</div>
+
+<div style="height:12px;"></div>
+
+<div class="grid">
+    {% for idea in ideas %}
+    <div class="card">
+        {% if idea.image %}
+        <img class="thumb" src="{{ idea.image.url }}" alt="">
+        {% else %}
+        <div class="thumb"></div>
+        {% endif %}
+
+        <div class="row" style="justify-content:space-between; margin-top:8px;">
+            <a href="{% url 'swidea:idea_detail' idea.id %}" style="text-decoration:none; color:#111; font-weight:700;">
+                {{ idea.title }}
+            </a>
+
+            <form method="post" action="{% url 'swidea:idea_star' idea.id %}">
+                {% csrf_token %}
+                <button class="star" title="찜">
+                    {% if idea.id in starred_ids %}⭐{% else %}☆{% endif %}
+                </button>
+            </form>
+        </div>
+
+        <div class="muted">개발툴: {% if idea.devtool %}{{ idea.devtool.name }}{% else %}-{% endif %}</div>
+
+        <div class="row" style="margin-top:8px; justify-content:space-between;">
+            <div class="muted">
+                관심도: <span id="interest-{{ idea.id }}">{{ idea.interest }}</span>
+            </div>
+
+            <div class="row">
+                <button class="btn" type="button" onclick="changeInterest({{ idea.id }}, 'minus')">-</button>
+                <button class="btn" type="button" onclick="changeInterest({{ idea.id }}, 'plus')">+</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function changeInterest(id, mode) {
+        const url = mode === 'plus'
+            ? `/idea/${id}/interest/plus/`
+            : `/idea/${id}/interest/minus/`;
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById(`interest-${id}`).innerText = data.interest;
+            });
+    }
+</script>
+
+{% endblock %}

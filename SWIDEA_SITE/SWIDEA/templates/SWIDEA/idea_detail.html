@@ -1,0 +1,86 @@
+{% extends "SWIDEA/base.html" %}
+{% block content %}
+
+<div class="card">
+  <div class="row" style="justify-content:space-between;">
+    <h2 style="margin:0;">{{ idea.title }}</h2>
+
+    <form method="post" action="{% url 'swidea:idea_star' idea.id %}">
+      {% csrf_token %}
+      <button class="star" title="찜">
+        {% if is_starred %}⭐{% else %}☆{% endif %}
+      </button>
+    </form>
+  </div>
+
+  <div class="muted">찜 개수: {{ star_count }}</div>
+
+  <div style="height:12px;"></div>
+
+  {% if idea.image %}
+    <img class="thumb" src="{{ idea.image.url }}" alt="">
+  {% endif %}
+
+  <div style="height:12px;"></div>
+
+  <div class="muted">
+    개발툴:
+    {% if idea.devtool %}
+      <a href="{% url 'swidea:devtool_detail' idea.devtool.id %}">{{ idea.devtool.name }}</a>
+    {% else %}
+      -
+    {% endif %}
+  </div>
+
+  <div style="height:8px;"></div>
+
+  <div class="muted">
+    관심도: <span id="interest-{{ idea.id }}">{{ idea.interest }}</span>
+    <button class="btn" type="button" onclick="changeInterest({{ idea.id }}, 'minus')">-</button>
+    <button class="btn" type="button" onclick="changeInterest({{ idea.id }}, 'plus')">+</button>
+  </div>
+
+  <div style="height:12px;"></div>
+
+  <div style="white-space:pre-wrap;">{{ idea.content }}</div>
+
+  <div style="height:18px;"></div>
+
+  <div class="row" style="justify-content:space-between;">
+    <a class="btn" href="{% url 'swidea:idea_list' %}">목록</a>
+    <div class="row">
+      <a class="btn btn-primary" href="{% url 'swidea:idea_update' idea.id %}">수정</a>
+      <form method="post" action="{% url 'swidea:idea_delete' idea.id %}">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit" onclick="return confirm('삭제할까?')">삭제</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  function changeInterest(id, mode) {
+    const url = mode === 'plus'
+      ? `/idea/${id}/interest/plus/`
+      : `/idea/${id}/interest/minus/`;
+
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById(`interest-${id}`).innerText = data.interest;
+    });
+  }
+</script>
+
+{% endblock %}

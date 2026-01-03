@@ -1,0 +1,38 @@
+{% extends "SWIDEA/base.html" %}
+{% block content %}
+
+<div class="card">
+  <h2 style="margin-top:0;">{{ devtool.name }}</h2>
+  <div class="muted">kind: {{ devtool.kind }}</div>
+
+  <div style="height:12px;"></div>
+  <div style="white-space:pre-wrap;">{{ devtool.content }}</div>
+
+  <div style="height:18px;"></div>
+
+  <div class="card" style="background:#fafafa;">
+    <div class="muted" style="margin-bottom:8px;">이 개발툴을 사용하는 아이디어</div>
+    <ul>
+      {% for idea in ideas %}
+        <li><a href="{% url 'swidea:idea_detail' idea.id %}">{{ idea.title }}</a></li>
+      {% empty %}
+        <li class="muted">없음</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div style="height:16px;"></div>
+
+  <div class="row" style="justify-content:space-between;">
+    <a class="btn" href="{% url 'swidea:devtool_list' %}">목록</a>
+    <div class="row">
+      <a class="btn btn-primary" href="{% url 'swidea:devtool_update' devtool.id %}">수정</a>
+      <form method="post" action="{% url 'swidea:devtool_delete' devtool.id %}">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit" onclick="return confirm('삭제할까?')">삭제</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

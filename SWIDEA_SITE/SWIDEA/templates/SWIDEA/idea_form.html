@@ -1,0 +1,70 @@
+{% extends "SWIDEA/base.html" %}
+{% block content %}
+
+<div class="card">
+  <h2 style="margin-top:0;">
+    {% if mode == "update" %}아이디어 수정{% else %}아이디어 등록{% endif %}
+  </h2>
+
+  <form method="post" enctype="multipart/form-data"
+        action="{% if mode == 'update' %}{% url 'swidea:idea_update' idea.id %}{% else %}{% url 'swidea:idea_create' %}{% endif %}">
+    {% csrf_token %}
+
+    <div class="row">
+      <div style="flex:1;">
+        <div class="muted">title</div>
+        <input class="btn" style="width:100%;" name="title" value="{{ idea.title|default:'' }}">
+      </div>
+    </div>
+
+    <div style="height:10px;"></div>
+
+    <div class="row">
+      <div style="flex:1;">
+        <div class="muted">image</div>
+        <input class="btn" style="width:100%;" type="file" name="image">
+        {% if mode == "update" and idea.image %}
+          <div class="muted" style="margin-top:6px;">현재 이미지: {{ idea.image.name }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div style="height:10px;"></div>
+
+    <div class="row">
+      <div style="flex:1;">
+        <div class="muted">content</div>
+        <textarea class="btn" style="width:100%; height:140px;" name="content">{{ idea.content|default:'' }}</textarea>
+      </div>
+    </div>
+
+    <div style="height:10px;"></div>
+
+    <div class="row">
+      <div style="flex:1;">
+        <div class="muted">interest</div>
+        <input class="btn" style="width:100%;" name="interest" value="{{ idea.interest|default:0 }}">
+      </div>
+      <div style="flex:1;">
+        <div class="muted">devtool</div>
+        <select class="btn" style="width:100%;" name="devtool">
+          <option value="">선택</option>
+          {% for d in devtools %}
+            <option value="{{ d.id }}" {% if idea.devtool and idea.devtool.id == d.id %}selected{% endif %}>
+              {{ d.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div style="height:14px;"></div>
+
+    <div class="row" style="justify-content:flex-end;">
+      <button class="btn btn-primary" type="submit">저장</button>
+      <a class="btn" href="{% url 'swidea:idea_list' %}">목록</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
