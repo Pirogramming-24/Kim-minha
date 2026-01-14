@@ -12,6 +12,13 @@ class Post(models.Model):
     created_at = models.DateTimeField('작성일', auto_now_add=True)
     updated_at = models.DateTimeField('수정일', null=True, blank=True)
     photo = models.ImageField('이미지', blank=True, upload_to='posts/%Y%m%d')
+    
+    # 영양성분표 관련 필드 추가
+    nutrition_image = models.ImageField('영양성분표 이미지', blank=True, null=True, upload_to='nutrition/%Y%m%d')
+    calories = models.FloatField('칼로리(kcal)', blank=True, null=True)
+    carbohydrates = models.FloatField('탄수화물(g)', blank=True, null=True)
+    protein = models.FloatField('단백질(g)', blank=True, null=True)
+    fat = models.FloatField('지방(g)', blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.pk:  # 수정일 때에만 갱신

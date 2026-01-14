@@ -13,8 +13,48 @@
     img {
         margin: 20px 0;
     }
+
+    .nutrition-section {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 30px;
+        border: 2px solid #4CAF50;
+    }
+
+    .nutrition-section h3 {
+        color: #4CAF50;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .nutrition-info {
+        list-style: none;
+        padding: 0;
+    }
+
+    .nutrition-info li {
+        padding: 10px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .nutrition-info li:last-child {
+        border-bottom: none;
+    }
+
+    .nutrition-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .nutrition-value {
+        color: #4CAF50;
+        font-weight: bold;
+    }
 </style>
-{% endblock%}
+{% endblock %}
 
 
 {% block content %}
@@ -31,10 +71,51 @@
 <h2 class="my-3">{{post.content}}</h2>
 <p>작성일: {{post.created_at}}</p>
 <p>수정일: {{post.updated_at}}</p>
-<p>이 작성자의 글</p>
 
+<!-- 영양성분 정보 섹션 -->
+{% if post.nutrition_image or post.calories %}
+<div class="nutrition-section">
+    <h3>식품 영양 정보</h3>
+    
+    {% if post.nutrition_image %}
+        <img src="{{ post.nutrition_image.url }}" alt="영양성분표" style="max-width: 300px; border-radius: 10px;" />
+    {% endif %}
+
+    <ul class="nutrition-info">
+        {% if post.calories %}
+        <li>
+            <span class="nutrition-label">칼로리:</span>
+            <span class="nutrition-value">{{ post.calories }}kcal</span>
+        </li>
+        {% endif %}
+
+        {% if post.carbohydrates %}
+        <li>
+            <span class="nutrition-label">탄수화물:</span>
+            <span class="nutrition-value">{{ post.carbohydrates }}g</span>
+        </li>
+        {% endif %}
+
+        {% if post.protein %}
+        <li>
+            <span class="nutrition-label">단백질:</span>
+            <span class="nutrition-value">{{ post.protein }}g</span>
+        </li>
+        {% endif %}
+
+        {% if post.fat %}
+        <li>
+            <span class="nutrition-label">지방:</span>
+            <span class="nutrition-value">{{ post.fat }}g</span>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+{% endif %}
+
+<p>이 작성자의 글</p>
 
 <hr />
 <a href="{% url 'posts:update' post.pk %}" class="btn btn-primary">수정하기</a>
 <a href="{% url 'posts:delete' post.pk %}" class="btn btn-danger">삭제하기</a>
-{% endblock content %}
+{% endblock %}

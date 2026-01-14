@@ -4,4 +4,22 @@ from .models import Post
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        exclude = ['created_at', 'updated_at']
+        fields = [
+            'title', 
+            'content', 
+            'region', 
+            'user', 
+            'price', 
+            'photo',
+            'nutrition_image',
+            'calories',
+            'carbohydrates',
+            'protein',
+            'fat'
+        ]
+        widgets = {
+            'calories': forms.NumberInput(attrs={'step': '0.1', 'placeholder': '분석 중...'}),
+            'carbohydrates': forms.NumberInput(attrs={'step': '0.1', 'placeholder': '분석 중...'}),
+            'protein': forms.NumberInput(attrs={'step': '0.1', 'placeholder': '분석 중...'}),
+            'fat': forms.NumberInput(attrs={'step': '0.1', 'placeholder': '분석 중...'}),
+        }
