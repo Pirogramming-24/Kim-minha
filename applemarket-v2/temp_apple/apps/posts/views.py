@@ -5,6 +5,7 @@ from .models import Post
 from .forms import PostForm
 from .services.ocr_service import NutritionOCRService
 import os
+import tempfile
 
 # Create your views here.
 def main(request):
@@ -73,35 +74,32 @@ def delete(request, pk):
 # OCR 분석 API (새로 추가)
 @require_POST
 def analyze_nutrition(request):
-    """영양성분표 이미지 OCR 분석 API"""
     if 'nutrition_image' not in request.FILES:
         return JsonResponse({'error': '이미지가 없습니다.'}, status=400)
-    
-    nutrition_image = request.FILES['nutrition_image']
-    
-    # 임시 파일로 저장
-    temp_path = f'/tmp/{nutrition_image.name}'
-    with open(temp_path, 'wb+') as destination:
-        for chunk in nutrition_image.chunks():
-            destination.write(chunk)
-    
-    try:
-        # OCR 분석
-        ocr_service = NutritionOCRService()
-        nutrition_info = ocr_service.analyze_nutrition_label(temp_path)
 
-        # mapped = {
-        #  "calories": nutrition_info.get("calories_kcal"),
-        #  "carbohydrates": nutrition_info.get("carbohydrates_g"),
-        #  "protein": nutrition_info.get("protein_g"),
-        #  "fat": nutrition_info.get("fat_g"),}
-        
-        # 임시 파일 삭제
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
-        
+    nutrition_image = request.FILES['nutrition_image']
+
+    ext = os.path.splitext(nutrition_image.name)[1].lower()
+    if ext not in [".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff"]:
+        ext = ".png"
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
+    try:
+        for chunk in nutrition_image.chunks():
+            tmp.write(chunk)
+        tmp.close()
+
+        ocr_service = NutritionOCRService()
+        nutrition_info = ocr_service.analyze_nutrition_label(tmp.name)
         return JsonResponse(nutrition_info)
-    
+
     except Exception as e:
         print(f"OCR 분석 오류: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
+
+    finally:
+        try:
+            if tmp and os.path.exists(tmp.name):
+                os.remove(tmp.name)
+        except:
+            pass
