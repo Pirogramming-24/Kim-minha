@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>post_detail</title>
+{% endblock %}
+
+{%block content%}
+<form action="{% url 'users:update' pk %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">수정 완료</button>
+</form>
+<hr>
+<form action="{% url 'users:delete' pk %}" method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger">삭제</button>
+</form>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<title>사과 마켓</title>
+{% endblock %}
+
+{% block content %}
+<div class="search-box">
+    <form action="">
+        <input class='form-control mx-2' type="input" name="search_txt" placeholder="검색어..." />
+        <input class='btn btn-outline-success mx-2' type="submit" value="검색" />
+    </form>
+</div>
+
+<div class="content-wrapper">
+    <!-- 사용자 목록 -->
+    {% for user in users %}
+    <div class="mb-3">
+        <a href="{% url 'users:update' user.pk %}">
+            <button type="button" class="btn btn-outline-secondary">
+                <span>이름: {{ user.name }}</span>
+                <span>나이: {{ user.age }}</span>
+            </button>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

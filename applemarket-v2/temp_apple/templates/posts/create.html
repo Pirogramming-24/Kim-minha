@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>post_create</title>
+<style>
+    main {
+        height: 100vh;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<form action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-success">등록하기</button>
+</form>
+{% endblock %}
