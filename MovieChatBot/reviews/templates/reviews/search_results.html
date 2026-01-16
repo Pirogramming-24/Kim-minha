@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}검색 결과 - myMovieReviews{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'reviews:review_list' %}" class="btn btn-outline-secondary mb-3">← 목록으로</a>
+    <h3>"{{ query }}" 검색 결과</h3>
+</div>
+
+<!-- 내 리뷰에서 검색 결과 -->
+<div class="mb-5">
+    <h5 class="mb-3">📝 내 리뷰 ({{ db_results.count }}개)</h5>
+    {% if db_results %}
+    <div class="row">
+        {% for review in db_results %}
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 shadow-sm">
+                {% if review.poster_path %}
+                <img src="https://image.tmdb.org/t/p/w500{{ review.poster_path }}" class="card-img-top" alt="{{ review.title }}">
+                {% else %}
+                <div style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                    {{ review.title }}
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <a href="{% url 'reviews:review_detail' review.id %}" class="text-decoration-none text-dark">
+                        <h6 class="card-title">{{ review.title }}</h6>
+                    </a>
+                    <p class="card-text"><small class="text-muted">⭐ {{ review.rating }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted">내 리뷰에서 검색 결과가 없습니다.</p>
+    {% endif %}
+</div>
+
+<!-- TMDB 검색 결과 -->
+<div>
+    <h5 class="mb-3">🎬 TMDB 영화 ({{ tmdb_results|length }}개)</h5>
+    {% if tmdb_results %}
+    <div class="row">
+        {% for movie in tmdb_results|slice:":8" %}
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 shadow-sm">
+                {% if movie.poster_path %}
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top" alt="{{ movie.title }}">
+                {% else %}
+                <div style="height: 300px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                    No Image
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title">{{ movie.title }}</h6>
+                    <p class="card-text">
+                        <small class="text-muted">⭐ {{ movie.vote_average }}</small><br>
+                        <small class="text-muted">{{ movie.release_date|slice:":4" }}</small>
+                    </p>
+                    <a href="{% url 'reviews:tmdb_import' movie.id %}" class="btn btn-sm btn-primary w-100">리뷰 작성</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted">TMDB에서 검색 결과가 없습니다.</p>
+    {% endif %}
+</div>
+{% endblock %}

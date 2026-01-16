@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ review.title }} - myMovieReviews{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow" style="background-color: #1a1a1a; border: 2px solid #00ff00;">
+            <div class="card-body p-4">
+                <!-- 포스터 이미지 -->
+                {% if review.poster_path %}
+                <div class="text-center mb-4">
+                    <img src="https://image.tmdb.org/t/p/w500{{ review.poster_path }}" 
+                         alt="{{ review.title }}" 
+                         style="max-width: 300px; border-radius: 15px; border: 2px solid #00ff00;">
+                </div>
+                {% elif review.poster_image %}
+                <div class="text-center mb-4">
+                    <img src="{{ review.poster_image.url }}" 
+                         alt="{{ review.title }}" 
+                         style="max-width: 300px; border-radius: 15px; border: 2px solid #00ff00;">
+                </div>
+                {% endif %}
+
+                <!-- 제목 -->
+                <div class="mb-4 text-center">
+                    <h2 style="color: #00ff00; font-weight: bold;">{{ review.title }}</h2>
+                </div>
+
+                <hr style="border-color: #00ff00;" class="mb-4">
+
+                <!-- 기본 정보 -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label style="color: #00ff00; font-weight: bold; display: block; margin-bottom: 5px;">개봉년도</label>
+                        <p style="color: #fff; font-size: 1.1rem;">{{ review.release_year }}년</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label style="color: #00ff00; font-weight: bold; display: block; margin-bottom: 5px;">장르</label>
+                        <p style="color: #fff; font-size: 1.1rem;">{{ review.genre }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label style="color: #00ff00; font-weight: bold; display: block; margin-bottom: 5px;">별점</label>
+                        <p style="color: #ffd700; font-size: 1.3rem;">⭐ {{ review.rating }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label style="color: #00ff00; font-weight: bold; display: block; margin-bottom: 5px;">러닝타임</label>
+                        <p style="color: #fff; font-size: 1.1rem;">{{ review.runtime }}분</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label style="color: #00ff00; font-weight: bold; display: block; margin-bottom: 5px;">감독</label>
+                    <p style="color: #fff; font-size: 1.1rem;">{{ review.director }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <label style="color: #00ff00; font-weight: bold; display: block; margin-bottom: 5px;">주연</label>
+                    <p style="color: #fff; font-size: 1.1rem;">{{ review.main_actor }}</p>
+                </div>
+
+                <hr style="border-color: #333;" class="mb-4">
+
+                <!-- 리뷰 내용 -->
+                <div class="mb-4">
+                    <label style="color: #00ff00; font-weight: bold; display: block; margin-bottom: 10px; font-size: 1.2rem;">리뷰</label>
+                    <div style="background-color: #000; border: 1px solid #333; border-radius: 10px; padding: 20px;">
+                        <p style="color: #fff; white-space: pre-wrap; line-height: 1.8; margin: 0;">{{ review.review_content }}</p>
+                    </div>
+                </div>
+
+                <hr style="border-color: #00ff00;" class="mt-4 mb-4">
+
+                <!-- 하단 버튼 -->
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'reviews:review_list' %}" class="btn" style="background-color: transparent; border: 1px solid #00ff00; color: #00ff00; padding: 10px 25px;">
+                        ← 목록으로
+                    </a>
+                    <div style="display: flex; gap: 10px;">
+                        <form action="{% url 'reviews:review_update' review.id %}" method="get" style="margin: 0;">
+                            <button type="submit" class="btn" style="background-color: #00ff00; color: #000; font-weight: bold; padding: 10px 25px;">
+                                ✏️ 수정
+                            </button>
+                        </form>
+
+                        <form action="{% url 'reviews:review_delete' review.id %}" method="post" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn" 
+                                    style="background-color: #ff0000; color: #fff; font-weight: bold; padding: 10px 25px; border: none;"
+                                    onclick="return confirm('정말 삭제하시겠습니까?')">
+                                🗑️ 삭제
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

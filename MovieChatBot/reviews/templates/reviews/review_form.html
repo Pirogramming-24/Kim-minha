@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if review %}리뷰 수정{% else %}리뷰 작성{% endif %} - myMovieReviews
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow" style="background-color: #1a1a1a; border: 2px solid #00ff00;">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4" style="color: #00ff00;">
+                    <span class="text-danger">Movie</span>review 🍿
+                </h3>
+
+                <hr style="border-color: #00ff00;" class="mb-4">
+
+                <form method="post" enctype="multipart/form-data" {% if review %}action="{% url 'reviews:review_update' review.id %}"{% else %}action="{% url 'reviews:review_create' %}"{% endif %}>
+                    {% csrf_token %}
+                    
+                    {% if tmdb_movie %}
+                    <input type="hidden" name="tmdb_id" value="{{ tmdb_id }}">
+                    <input type="hidden" name="poster_path" value="{{ poster_path }}">
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label" style="color: #00ff00;">제목:</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               style="background-color: #000; border-color: #333; color: #fff;"
+                               value="{% if tmdb_movie %}{{ tmdb_movie.title }}{% elif review %}{{ review.title }}{% endif %}" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="release_year" class="form-label" style="color: #00ff00;">개봉년도:</label>
+                            <input type="number" class="form-control" id="release_year" name="release_year" 
+                                   style="background-color: #000; border-color: #333; color: #fff;"
+                                   value="{% if tmdb_movie %}{{ tmdb_movie.release_date|slice:':4' }}{% elif review %}{{ review.release_year }}{% endif %}" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="genre" class="form-label" style="color: #00ff00;">장르:</label>
+                            <input type="text" class="form-control" id="genre" name="genre" 
+                                   style="background-color: #000; border-color: #333; color: #fff;"
+                                   value="{% if tmdb_movie %}{{ genre }}{% elif review %}{{ review.genre }}{% endif %}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="rating" class="form-label" style="color: #00ff00;">별점:</label>
+                            <input type="number" class="form-control" id="rating" name="rating" 
+                                   style="background-color: #000; border-color: #333; color: #fff;"
+                                   step="0.1" min="0" max="10" 
+                                   value="{% if tmdb_movie %}{{ tmdb_movie.vote_average|floatformat:1 }}{% elif review %}{{ review.rating }}{% endif %}" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="runtime" class="form-label" style="color: #00ff00;">러닝타임:</label>
+                            <input type="number" class="form-control" id="runtime" name="runtime" 
+                                   style="background-color: #000; border-color: #333; color: #fff;"
+                                   value="{% if tmdb_movie %}{{ tmdb_movie.runtime }}{% elif review %}{{ review.runtime }}{% endif %}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="director" class="form-label" style="color: #00ff00;">감독:</label>
+                        <input type="text" class="form-control" id="director" name="director" 
+                               style="background-color: #000; border-color: #333; color: #fff;"
+                               value="{% if tmdb_movie %}{{ director }}{% elif review %}{{ review.director }}{% endif %}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="main_actor" class="form-label" style="color: #00ff00;">배우:</label>
+                        <input type="text" class="form-control" id="main_actor" name="main_actor" 
+                               style="background-color: #000; border-color: #333; color: #fff;"
+                               value="{% if tmdb_movie %}{{ main_actor }}{% elif review %}{{ review.main_actor }}{% endif %}" required>
+                    </div>
+
+                    <!-- 이미지 업로드 필드 추가 -->
+                    {% if not tmdb_movie or not poster_path %}
+                    <div class="mb-3">
+                        <label for="poster_image" class="form-label" style="color: #00ff00;">포스터 이미지:</label>
+                        <input type="file" class="form-control" id="poster_image" name="poster_image" 
+                               style="background-color: #000; border-color: #333; color: #fff;"
+                               accept="image/*">
+                        <small style="color: #888;">JPG, PNG 파일 업로드 가능</small>
+                        
+                        {% if review and review.poster_image %}
+                        <div class="mt-2">
+                            <img src="{{ review.poster_image.url }}" alt="현재 포스터" style="max-width: 200px; border: 2px solid #00ff00; border-radius: 10px;">
+                            <p style="color: #00ff00; margin-top: 10px;">현재 이미지 (새 이미지 선택 시 교체됩니다)</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="review_content" class="form-label" style="color: #00ff00;">리뷰:</label>
+                        <textarea class="form-control" id="review_content" name="review_content" 
+                                  style="background-color: #000; border-color: #333; color: #fff;"
+                                  rows="10" required>{% if review %}{{ review.review_content }}{% endif %}</textarea>
+                    </div>
+
+                    <div class="text-end">
+                        <a href="{% url 'reviews:review_list' %}" class="btn me-2" style="background-color: transparent; border: 1px solid #00ff00; color: #00ff00;">취소</a>
+                        <button type="submit" class="btn px-4" style="background-color: #00ff00; color: #000; font-weight: bold;">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
