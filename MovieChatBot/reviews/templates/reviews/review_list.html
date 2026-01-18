@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+
+{% block title %}영화 리뷰 - myMovieReviews{% endblock %}
+
+{% block content %}
+<style>
+    .stats-box {
+        background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        color: #000;
+        font-weight: bold;
+    }
+    .stats-number {
+        font-size: 2.5rem;
+        margin-bottom: 5px;
+    }
+    .stats-label {
+        font-size: 0.9rem;
+    }
+    .search-bar {
+        background-color: #1a1a1a;
+        border: 2px solid #333;
+        border-radius: 10px;
+        padding: 15px;
+    }
+    .search-bar input {
+        background-color: #000;
+        border: 1px solid #333;
+        color: #fff;
+    }
+    .search-bar input:focus {
+        background-color: #000;
+        border-color: #00ff00;
+        color: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 255, 0, 0.25);
+    }
+    .btn-neon {
+        background-color: #00ff00;
+        color: #000;
+        border: none;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+    .btn-neon:hover {
+        background-color: #00cc00;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+    .filter-btn {
+        background-color: transparent;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        border-radius: 20px;
+        padding: 8px 20px;
+        margin: 5px;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .filter-btn:hover, .filter-btn.active {
+        background-color: #00ff00;
+        color: #000;
+    }
+    .movie-card {
+        background-color: #1a1a1a;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s;
+        height: 100%;
+    }
+    .movie-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0, 255, 0, 0.3);
+    }
+    .movie-poster {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+    }
+    .tmdb-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #00ff00;
+        color: #000;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+    .movie-item {
+        display: block;
+    }
+    .movie-item.hidden {
+        display: none;
+    }
+</style>
+
+<!-- 상단 통계 -->
+<div class="text-center mb-5">
+    <h1 class="mb-4" style="font-size: 3rem; font-weight: bold;">🍿Movie Archive🍿</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-2 mb-3">
+            <div class="stats-box">
+                <div class="stats-number" id="totalCount">{{ total_count }}</div>
+                <div class="stats-label">Total</div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stats-box">
+                <div class="stats-number">{{ tmdb_movies|length }}</div>
+                <div class="stats-label">TMDB</div>
+            </div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <div class="stats-box">
+                <div class="stats-number">{{ reviews.paginator.count }}</div>
+                <div class="stats-label">My</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 검색 바 -->
+<div class="row mb-5">
+    <div class="col-md-8 mx-auto">
+        <div class="search-bar">
+            <form action="{% url 'reviews:search' %}" method="get" class="d-flex">
+                <input type="text" name="q" class="form-control me-2" placeholder="영화 제목, 감독, 배우로 검색..." required>
+                <button type="submit" class="btn btn-neon">검색</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 필터 & 정렬 버튼 -->
+<div class="text-center mb-4">
+    <div class="mb-3">
+        <span style="color: #00ff00; font-weight: bold; font-size: 1.2rem;">필터:</span>
+    </div>
+    <button class="filter-btn active" data-filter="all">Total</button>
+    <button class="filter-btn" data-filter="tmdb">TMDB</button>
+    <button class="filter-btn" data-filter="my">My</button>
+    
+    <div class="mt-3">
+        <span style="color: #00ff00; font-weight: bold; font-size: 1.2rem;">정렬:</span>
+    </div>
+    <button class="filter-btn" data-sort="latest">최신순</button>
+    <button class="filter-btn" data-sort="rating">별점순</button>
+    <button class="filter-btn" data-sort="title">제목순</button>
+    <button class="filter-btn" data-sort="year">개봉순</button>
+</div>
+
+<!-- 영화 목록 -->
+<div>
+    <div class="row" id="movieContainer">
+        <!-- TMDB 영화 -->
+        {% for movie in tmdb_movies %}
+        <div class="col-md-3 mb-4 movie-item tmdb-movie" 
+             data-type="tmdb"
+             data-title="{{ movie.title }}"
+             data-rating="{{ movie.vote_average }}"
+             data-year="{{ movie.release_date|slice:':4' }}">
+            <div class="movie-card position-relative">
+                <span class="tmdb-badge">TMDB</span>
+                {% if movie.poster_path %}
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="movie-poster" alt="{{ movie.title }}">
+                {% else %}
+                <div class="movie-poster" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 1.2rem; font-weight: bold;">No Image</span>
+                </div>
+                {% endif %}
+                <div class="p-3">
+                    <h6 style="color: #fff; font-weight: bold;">{{ movie.title }}</h6>
+                    <p class="mb-2">
+                        <small style="color: #00ff00;">{{ movie.release_date|slice:":4" }}</small> • 
+                        <small style="color: #ffd700;">⭐ {{ movie.vote_average }}</small>
+                    </p>
+                    <a href="{% url 'reviews:tmdb_import' movie.id %}" class="btn btn-neon btn-sm w-100">리뷰 작성</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- 내 리뷰 -->
+        {% for review in reviews %}
+        <div class="col-md-3 mb-4 movie-item my-review" 
+             data-type="my"
+             data-title="{{ review.title }}"
+             data-rating="{{ review.rating }}"
+             data-year="{{ review.release_year }}">
+            <div class="movie-card">
+                {% if review.poster_path %}
+                <img src="https://image.tmdb.org/t/p/w500{{ review.poster_path }}" class="movie-poster" alt="{{ review.title }}">
+                {% elif review.poster_image %}
+                <img src="{{ review.poster_image.url }}" class="movie-poster" alt="{{ review.title }}">
+                {% else %}
+                <div class="movie-poster" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 1.2rem; font-weight: bold;">{{ review.title }}</span>
+                </div>
+                {% endif %}
+                <div class="p-3">
+                    <a href="{% url 'reviews:review_detail' review.id %}" class="text-decoration-none">
+                        <h6 style="color: #fff; font-weight: bold;">{{ review.title }}</h6>
+                    </a>
+                    <p class="mb-2">
+                        <small style="color: #00ff00;">{{ review.release_year }}년</small> • 
+                        <small style="color: #ffd700;">⭐ {{ review.rating }}</small>
+                    </p>
+                    <p class="mb-0"><small style="color: #888;">{{ review.genre }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+// 필터 & 정렬 기능
+let currentFilter = 'all';
+let currentSort = 'latest';
+
+// 필터 버튼
+document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // 활성화 상태 변경
+        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        currentFilter = this.dataset.filter;
+        applyFilterAndSort();
+    });
+});
+
+// 정렬 버튼
+document.querySelectorAll('[data-sort]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // 활성화 상태 변경
+        document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        currentSort = this.dataset.sort;
+        applyFilterAndSort();
+    });
+});
+
+function applyFilterAndSort() {
+    const container = document.getElementById('movieContainer');
+    const items = Array.from(document.querySelectorAll('.movie-item'));
+    
+    // 1. 필터링
+    items.forEach(item => {
+        const type = item.dataset.type;
+        if (currentFilter === 'all' || currentFilter === type) {
+            item.classList.remove('hidden');
+        } else {
+            item.classList.add('hidden');
+        }
+    });
+    
+    // 2. 정렬
+    const visibleItems = items.filter(item => !item.classList.contains('hidden'));
+    
+    visibleItems.sort((a, b) => {
+        switch(currentSort) {
+            case 'rating':
+                return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+            case 'title':
+                return a.dataset.title.localeCompare(b.dataset.title);
+            case 'year':
+                return parseInt(b.dataset.year) - parseInt(a.dataset.year);
+            case 'latest':
+            default:
+                // TMDB는 위에, 내 리뷰는 아래
+                if (a.dataset.type === 'tmdb' && b.dataset.type === 'my') return -1;
+                if (a.dataset.type === 'my' && b.dataset.type === 'tmdb') return 1;
+                return 0;
+        }
+    });
+    
+    // 3. 재배치
+    visibleItems.forEach(item => container.appendChild(item));
+    
+    // 4. 통계 업데이트
+    updateStats(visibleItems.length);
+}
+
+function updateStats(count) {
+    document.getElementById('totalCount').textContent = count;
+}
+</script>
+{% endblock %}
