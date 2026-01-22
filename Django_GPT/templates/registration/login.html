@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}로그인 | LilyAI.kr{% endblock %}
+
+{% block content %}
+<div class="main-header">
+  <div class="title">로그인</div>
+  <div class="hint">로그인 성공 시 원래 페이지로 자동 복귀합니다.</div>
+</div>
+
+<div class="chat">
+  <form method="post" class="bubble assistant" style="max-width:520px;">
+    {% csrf_token %}
+    {% if form.errors %}
+    <div style="color: rgba(255,107,107,.95); margin-bottom:10px;">아이디/비밀번호가 올바르지 않습니다.</div>
+    {% endif %}
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <input name="username" placeholder="Username" required style="width:100%; height:42px; padding:10px 12px; border-radius:12px;
+                 border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.15); color:rgba(255,255,255,.92);">
+
+      <input type="password" name="password" placeholder="Password" required style="width:100%; height:42px; padding:10px 12px; border-radius:12px;
+                 border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.15); color:rgba(255,255,255,.92);">
+
+      <input type="hidden" name="next" value="{{ next }}">
+
+      <button type="submit" style="height:44px; border-radius:12px; border:1px solid rgba(122,162,255,.35);
+                 background:rgba(122,162,255,.18); color:rgba(255,255,255,.92); cursor:pointer;">
+        로그인
+      </button>
+      
+      <div style="margin-top:10px; font-size:13px; opacity:.85;">
+        계정이 없으면
+        <a href="/accounts/signup/?next={{ next|urlencode }}" style="text-decoration:underline;">회원가입</a>
+      </div>
+
+    </div>
+  </form>
+</div>
+{% endblock %}

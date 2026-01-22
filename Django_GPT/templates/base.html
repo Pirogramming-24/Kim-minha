@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}LilyAI.kr{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #0b0d12;
+            --panel: #111624;
+            --panel2: #0f1420;
+            --line: rgba(255, 255, 255, .10);
+            --text: rgba(255, 255, 255, .92);
+            --muted: rgba(255, 255, 255, .65);
+            --accent: #7aa2ff;
+            --danger: #ff6b6b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .topbar {
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(17, 22, 36, .9);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .brand .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 18px rgba(122, 162, 255, .55);
+        }
+
+        .auth a {
+            padding: 8px 12px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .02);
+        }
+
+        .auth a:hover {
+            border-color: rgba(122, 162, 255, .35);
+        }
+
+        .layout {
+            height: calc(100vh - 56px);
+            display: flex;
+        }
+
+        .sidebar {
+            width: 240px;
+            border-right: 1px solid var(--line);
+            background: var(--panel2);
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            color: var(--muted);
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, .03);
+            border-color: rgba(255, 255, 255, .08);
+            color: var(--text);
+        }
+
+        .tab.active {
+            background: rgba(122, 162, 255, .10);
+            border-color: rgba(122, 162, 255, .28);
+            color: var(--text);
+        }
+
+        .tab .pill {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            color: rgba(255, 255, 255, .70);
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background: linear-gradient(180deg, rgba(17, 22, 36, .35), rgba(11, 13, 18, .65));
+        }
+
+        .main-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .main-header .title {
+            font-size: 16px;
+            color: rgba(255, 255, 255, .88);
+        }
+
+        .main-header .hint {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 65%;
+        }
+
+        .chat {
+            flex: 1;
+            min-height: 0;
+            padding: 16px;
+            overflow: auto;
+        }
+
+        .bubble {
+            max-width: 820px;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .03);
+            margin-bottom: 10px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .bubble.user {
+            margin-left: auto;
+            background: rgba(122, 162, 255, .10);
+            border-color: rgba(122, 162, 255, .25);
+        }
+
+        .bubble.assistant {
+            margin-right: auto;
+        }
+
+        .composer {
+            padding: 12px 16px;
+            border-top: 1px solid var(--line);
+            background: rgba(17, 22, 36, .7);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .composer textarea {
+            flex: 1;
+            resize: none;
+            height: 44px;
+            max-height: 160px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(0, 0, 0, .15);
+            color: var(--text);
+            outline: none;
+        }
+
+        .composer textarea:focus {
+            border-color: rgba(122, 162, 255, .35);
+            box-shadow: 0 0 0 3px rgba(122, 162, 255, .12);
+        }
+
+        .composer button {
+            height: 44px;
+            padding: 0 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(122, 162, 255, .35);
+            background: rgba(122, 162, 255, .18);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .composer button:hover {
+            background: rgba(122, 162, 255, .24);
+        }
+
+        .composer .small {
+            font-size: 12px;
+            color: var(--muted);
+            margin-left: 8px;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 190px;
+            }
+
+            .main-header .hint {
+                display: none;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .tab {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="dot"></span>
+            <a href="{% url 'home' %}">LilyAI.kr</a>
+        </div>
+        <div class="auth">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit"
+                    style="padding:8px 12px; border:1px solid var(--line); border-radius:10px; background:rgba(255,255,255,.02); color:var(--text); cursor:pointer;">
+                    로그아웃
+                </button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}">로그인</a>
+            <a href="{% url 'signup' %}" style="margin-left:10px;">회원가입</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <a class="tab {% if active_tab == 'translate' %}active{% endif %}" href="{% url 'translate' %}">
+                번역 <span class="pill">Translate</span>
+            </a>
+            <a class="tab {% if active_tab == 'summarize' %}active{% endif %}" href="{% url 'summarize' %}">
+                요약 <span class="pill">Summarize</span>
+            </a>
+            <a class="tab {% if active_tab == 'generate' %}active{% endif %}" href="{% url 'generate' %}">
+                글생성 <span class="pill">Generate</span>
+            </a>
+        </aside>
+
+        <main class="main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+
+</html>
