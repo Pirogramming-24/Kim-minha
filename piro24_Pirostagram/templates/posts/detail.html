@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Post Detail</title>
+</head>
+<body>
+  <a href="{% url 'posts:feed' %}">Back</a>
+  <hr>
+
+  <div>
+    <a href="{% url 'posts:profile' post.author.username %}">{{ post.author.username }}</a>
+    <span style="color:#666;"> / {{ post.created_at }}</span>
+  </div>
+
+  <div style="margin:8px 0;">
+    <img src="{{ post.image.url }}" alt="post" style="max-width:420px;">
+  </div>
+
+  <p>{{ post.content }}</p>
+
+  <form action="{% url 'posts:like_toggle' post.id %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{% url 'posts:detail' post.id %}">
+    {% if liked %}
+      <button type="submit">Unlike</button>
+    {% else %}
+      <button type="submit">Like</button>
+    {% endif %}
+    <span>likes: {{ likes_count }}</span>
+  </form>
+
+  <hr>
+
+  <h3>Comments</h3>
+
+  <form action="{% url 'posts:comment_create' post.id %}" method="post">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Add</button>
+  </form>
+
+  <ul>
+    {% for c in comments %}
+      <li style="margin:10px 0;">
+        <span>{{ c.user.username }}:</span>
+        <span>{{ c.content }}</span>
+        <span style="color:#666;">({{ c.created_at }})</span>
+
+        {% if c.user == user %}
+          <a href="{% url 'posts:comment_update' c.id %}">Edit</a>
+          <a href="{% url 'posts:comment_delete' c.id %}">Delete</a>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>No comments</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

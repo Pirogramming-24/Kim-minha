@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Delete</title>
+</head>
+<body>
+  <a href="{% url 'posts:feed' %}">Back</a>
+  <h2>Delete this post?</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+  </form>
+</body>
+</html>

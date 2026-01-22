@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Delete Comment</title>
+</head>
+<body>
+  <a href="{% url 'posts:detail' comment.post_id %}">Back</a>
+  <hr>
+
+  <p>Delete this comment?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+  </form>
+</body>
+</html>
