@@ -2,41 +2,66 @@
 {% block title %}{{ page_title }} | LilyAI.kr{% endblock %}
 
 {% block content %}
-  <div class="main-header">
-    <div class="title">{{ page_title }}</div>
-    <div class="hint">{% if user.is_authenticated %}로그인: 기록 저장됨{% else %}비로그인: F5 시 초기화{% endif %}</div>
+<div class="main-header">
+  <div class="title">{{ page_title }}</div>
+  <div class="hint">{% if user.is_authenticated %}로그인: 기록 저장됨{% else %}비로그인: F5 시 초기화{% endif %}</div>
+</div>
+
+<div class="chat">
+  {% if error %}
+  <div class="bubble assistant" style="border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.08);">
+    {{ error }}
   </div>
+  {% endif %}
 
-  <div class="chat">
-    {% if error %}
-      <div class="bubble assistant" style="border-color: rgba(255,107,107,.35); background: rgba(255,107,107,.08);">
-        {{ error }}
-      </div>
-    {% endif %}
+  {% if user.is_authenticated %}
+  {% if messages %}
+  {% for m in messages %}
+  <div class="bubble {{ m.role }}">{{ m.content }}</div>
+  {% endfor %}
+  {% else %}
+  <div class="bubble assistant">대화 기록이 없습니다.</div>
+  {% endif %}
+  {% else %}
+  {% if one_shot_user %}
+  <div class="bubble user">{{ one_shot_user }}</div>
+  {% endif %}
+  {% if one_shot_assistant %}
+  <div class="bubble assistant">{{ one_shot_assistant }}</div>
+  {% else %}
+  <div class="bubble assistant">요약 탭은 비로그인도 사용 가능합니다.</div>
+  {% endif %}
+  {% endif %}
+</div>
 
-    {% if user.is_authenticated %}
-      {% if messages %}
-        {% for m in messages %}
-          <div class="bubble {{ m.role }}">{{ m.content }}</div>
-        {% endfor %}
-      {% else %}
-        <div class="bubble assistant">대화 기록이 없습니다.</div>
-      {% endif %}
-    {% else %}
-      {% if one_shot_user %}
-        <div class="bubble user">{{ one_shot_user }}</div>
-      {% endif %}
-      {% if one_shot_assistant %}
-        <div class="bubble assistant">{{ one_shot_assistant }}</div>
-      {% else %}
-        <div class="bubble assistant">요약 탭은 비로그인도 사용 가능합니다.</div>
-      {% endif %}
-    {% endif %}
+<form class="composer" method="post">
+  {% csrf_token %}
+  <textarea name="prompt" placeholder="입력..." autocomplete="off"></textarea>
+  <button type="submit">전송</button>
+  <div id="loading" style="display:none; margin-top:10px; font-size:13px; opacity:.85;">
+    처리 중…
   </div>
+</form>
+<script>
+  (function () {
+    const form = document.querySelector("form.composer");
+    if (!form) return;
 
-  <form class="composer" method="post">
-    {% csrf_token %}
-    <textarea name="prompt" placeholder="입력..." autocomplete="off"></textarea>
-    <button type="submit">전송</button>
-  </form>
+    const loading = document.getElementById("loading");
+    const btn = form.querySelector("button[type='submit']");
+    const textarea = form.querySelector("textarea[name='prompt']");
+
+    form.addEventListener("submit", function () {
+      if (loading) loading.style.display = "block";
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "처리 중…";
+        btn.style.opacity = "0.7";
+        btn.style.cursor = "not-allowed";
+      }
+      if (textarea) textarea.readOnly = true;
+    });
+  })();
+</script>
+
 {% endblock %}
