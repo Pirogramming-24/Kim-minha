@@ -3,15 +3,16 @@
 ---
 ## 사용 모델
 
-<!-- Helsinki-NLP/opus-mt-en-ko
+Helsinki-NLP/opus-mt-en-ko
 ### 1. facebook/nllb-200-distilled-600M
 -**태스크**: Translation (번역)
 -**입력 예시**Abundant faunal evidence links evolutionary patterns with palaeoenvironmental change as a principal underlying force1. Many of the earlier hominin taxa recognized today are found in the Afar, but Paranthropus has been conspicuously absent from the region.
 -**출력 예시**풍부한 생물학적 증거는 진화 패턴과 환경 변화를 근본적인 요인으로 연결하고 있습니다1. 오늘날 알려진 초기 호미인 taxon의 많은 것들은 아파르에서 발견됩니다. 하지만 파란트로푸스는 분명히 그 지역에서 사라졌습니다.
 - 실행 화면 예시:
--->
+--><img width="891" height="962" alt="image" src="https://github.com/user-attachments/assets/3caf807d-4baa-4ee9-ad5b-c465a364b343" />
 
-<!-- sshleifer/distilbart-cnn-12-6
+
+sshleifer/distilbart-cnn-12-6
 ### 2. facebook/bart-large-cnn
 -**태스크**: Summarization (요약)
 -**입력 예시**
@@ -19,15 +20,17 @@ The Afar depression in northeastern Ethiopia contains a rich palaeontological an
 -**출력 예시**
 The Afar depression in northeastern Ethiopia contains a rich palaeontological and archaeological record . Many of the earlier hominin taxa recognized today are found in the Afar . Paranthropus has been conspicuously absent from the region .
 - 실행 화면 예시:
--->
+--><img width="887" height="963" alt="image" src="https://github.com/user-attachments/assets/57bcdf91-f625-467d-84c0-2175bba4e3df" />
 
-<!--Qwen/Qwen2.5-1.5B-Instruct
+
+Qwen/Qwen2.5-1.5B-Instruct
 ### 3. distilbert-base-uncased-finetuned-sst-2-english
 -**태스크**: Sentiment Analysis (글쓰기))
 -**입력 예시**The Afar
 -**출력 예시**Afar is the largest depression in Ethiopia's history . It is also known as a depression in the Afar Depression . Ethiopia is one of the largest depressions in the world, with a population of more than 100,000 .
 - 실행 화면 예시:
--->
+--><img width="883" height="962" alt="image" src="https://github.com/user-attachments/assets/3c3e230c-f0ef-443a-8e7d-3f6bcafb2c5a" />
+
 
 ---
 ## 로그인 제한(Access Control)
@@ -51,3 +54,11 @@ The Afar depression in northeastern Ethiopia contains a rich palaeontological an
 - [✅] 비로그인 사용자는 1개 탭만 접근 가능
 - [✅] 제한 탭 접근 시 alert 후 로그인 페이지로 redirect
 - [✅] 로그인 성공 시 원래 페이지로 복귀(next)
+
+
+### 추가 구현
+-회원가입
+<img width="890" height="976" alt="image" src="https://github.com/user-attachments/assets/69020b83-b318-4154-ad3c-f346813210f5" />
+-접근 제한
+<img width="893" height="967" alt="image" src="https://github.com/user-attachments/assets/f3052fb8-b601-4c05-9f6c-91941fad7dde" />
+
