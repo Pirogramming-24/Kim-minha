@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}프로필{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; gap:28px; align-items:flex-start;">
+  <div style="width:220px; text-align:center;">
+    {% if latest_story %}
+      <a href="{% url 'posts:story_view' latest_story.id %}">
+        <img class="avatar" src="https://via.placeholder.com/120?text={{ target.username|slice:":2" }}" style="width:120px;height:120px;border-width:3px;" alt="profile">
+      </a>
+    {% else %}
+      <img class="avatar" src="https://via.placeholder.com/120?text={{ target.username|slice:":2" }}" style="width:120px;height:120px;border-width:3px;" alt="profile">
+    {% endif %}
+  </div>
+
+  <div style="flex:1;">
+    <div style="display:flex; gap:12px; align-items:center;">
+      <h2 style="margin:0;">{{ target.username }}</h2>
+
+      {% if target == user %}
+        <a class="btn" href="/admin/auth/user/{{ user.id }}/change/">프로필 수정하기</a>
+      {% else %}
+        <form action="{% url 'posts:follow_toggle' target.username %}" method="post" style="margin:0;">
+          {% csrf_token %}
+          {% if is_following %}
+            <button class="btn" type="submit">팔로잉</button>
+          {% else %}
+            <button class="btn" type="submit">팔로우</button>
+          {% endif %}
+        </form>
+      {% endif %}
+    </div>
+
+    <div style="margin-top:10px; color:#555;">
+      게시물 {{ posts|length }} · 팔로워 {{ followers_count }} · 팔로우 {{ following_count }}
+    </div>
+  </div>
+</div>
+
+<hr style="border:none; border-top:1px solid #eee; margin:18px 0;">
+
+<div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+  {% for post in posts %}
+    <a href="{% url 'posts:detail' post.id %}">
+      <img src="{{ post.image.url }}" alt="post" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:8px;">
+    </a>
+  {% empty %}
+    <p>게시글이 없습니다.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

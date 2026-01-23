@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}홈{% endblock %}
+
+{% block content %}
+
+<div class="storybar">
+  <!-- 내 동그라미 -->
+  <div class="story-item">
+    {% if my_latest_story %}
+      <a href="{% url 'posts:story_view' my_latest_story.id %}" style="text-decoration:none;">
+        <div class="avatar-circle">ME</div>
+      </a>
+    {% else %}
+      <a href="{% url 'posts:profile' user.username %}" style="text-decoration:none;">
+        <div class="avatar-circle">ME</div>
+      </a>
+    {% endif %}
+    <div style="margin-top:6px;">{{ user.username }}</div>
+    <div style="margin-top:8px;">
+      <a class="btn" href="{% url 'posts:story_create' %}">스토리+</a>
+    </div>
+  </div>
+
+  <!-- 모든 유저 동그라미 -->
+  {% for p in story_profiles %}
+    <div class="story-item">
+      {% if p.story_id %}
+        <a href="{% url 'posts:story_view' p.story_id %}" style="text-decoration:none;">
+          <div class="avatar-circle">{{ p.user.username|slice:":2"|upper }}</div>
+        </a>
+      {% else %}
+        <a href="{% url 'posts:profile' p.user.username %}" style="text-decoration:none;">
+          <div class="avatar-circle">{{ p.user.username|slice:":2"|upper }}</div>
+        </a>
+      {% endif %}
+      <div style="margin-top:6px;">{{ p.user.username }}</div>
+    </div>
+  {% endfor %}
+</div>
+
+
+
+
+  {% for s in story_list %}
+    {% if s.user_id != user.id %}
+      <div class="story-item">
+        <a href="{% url 'posts:story_view' s.id %}">
+          <img class="avatar" src="https://via.placeholder.com/68?text={{ s.user.username|slice:":2" }}" alt="story">
+        </a>
+        <div style="margin-top:6px;">{{ s.user.username }}</div>
+      </div>
+    {% endif %}
+  {% empty %}
+    <span>No stories</span>
+  {% endfor %}
+</div>
+
+<hr style="border:none; border-top:1px solid #eee; margin:18px 0;">
+
+{% for post in posts %}
+<div style="margin-bottom:24px;">
+    <div>
+        <a href="{% url 'posts:profile' post.author.username %}">{{ post.author.username }}</a>
+        <span style="color:#888;"> / {{ post.created_at }}</span>
+    </div>
+
+    <div style="margin:10px 0;">
+        <a href="{% url 'posts:detail' post.id %}">
+            <img src="{{ post.image.url }}" alt="post" style="max-width:420px; border-radius:8px;">
+        </a>
+    </div>
+
+    <div style="margin-bottom:8px;">{{ post.content }}</div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+
+        <form action="{% url 'posts:like_toggle' post.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'posts:feed' %}">
+
+            {% if post.id in liked_post_ids %}
+            <button type="submit"
+                style="background:#ff2d55; color:white; border:none; padding:8px 12px; border-radius:10px; cursor:pointer;">
+                좋아요
+            </button>
+            {% else %}
+            <button type="submit"
+                style="background:white; color:#111; border:1px solid #ddd; padding:8px 12px; border-radius:10px; cursor:pointer;">
+                좋아요
+            </button>
+            {% endif %}
+        </form>
+
+        <span style="color:#444;">좋아요 {{ post.likes_count }}</span>
+
+        <a href="{% url 'posts:detail' post.id %}">댓글 {{ post.comments_count }}</a>
+
+        {% if post.author == user %}
+        <a href="{% url 'posts:update' post.id %}">수정</a>
+        <a href="{% url 'posts:delete' post.id %}">삭제</a>
+        {% endif %}
+    </div>
+</div>
+<hr style="border:none; border-top:1px solid #eee; margin:18px 0;">
+{% empty %}
+<p>게시글이 없습니다.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}스토리 업로드{% endblock %}
+{% block content %}
+<h2 style="margin-top:0;">스토리 업로드</h2>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" name="images" multiple accept="image/*">
+  <button type="submit" style="margin-left:10px;">업로드</button>
+</form>
+{% endblock %}
